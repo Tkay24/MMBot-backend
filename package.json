@@ -1,17 +1,14 @@
 {
   "name": "blockbounce-backend",
   "version": "1.2.3",
-  "description": "Nodejs Express Sequelize Mysql API blockbounce with JWT, Swagger, Winston, PM2",
+  "description": "Node.js Express Sequelize MySQL API for BlockBounce with JWT, Swagger, Winston, PM2",
   "main": "index.js",
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "start": "node app.js",
-    "prepare": "npx sequelize-cli db:create && npx sequelize-cli db:migrate",
-    "start:dev": "pm2 start --env dev",
-    "start:test": "pm2 start --env test",
-    "start:prod": "pm2 start --env prod",
+    "prepare": "sequelize db:create && sequelize db:migrate",
+    "start:dev": "pm2 start --env dev ecosystem.config.js",
+    "start:test": "pm2 start --env test ecosystem.config.js",
+    "start:prod": "pm2 start --env prod ecosystem.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
@@ -19,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/javier2609/blockbounce-backend.git"
+    "url": "https://github.com/javier2609/blockbounce-backend.git"
   },
   "keywords": [
     "api",
@@ -41,7 +38,7 @@
   "bugs": {
     "url": "https://github.com/javier2609/blockbounce-backend/issues"
   },
-  "homepage": "https://github.com/javier2609/blockbounce-backend/blob/main/README.md",
+  "homepage": "https://github.com/javier2609/blockbounce-backend#readme",
   "dependencies": {
     "axios": "^1.6.8",
     "bcrypt": "^5.1.0",
@@ -56,7 +53,6 @@
     "moment": "^2.29.4",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.9.1",
-    "nodemon": "^2.0.20",
     "passport": "^0.6.0",
     "passport-jsonwebtoken": "^1.0.3",
     "pm2": "^5.3.1",
@@ -68,5 +64,8 @@
   },
   "devDependencies": {
     "sequelize-cli": "^6.5.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
