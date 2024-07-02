@@ -1,61 +1,36 @@
-const dotenv = require('dotenv')
-dotenv.config()
-const express = require('express')
-const app = express()
-const routeManager = require('./route/route.manager.js')
-const db = require("./models/index");
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const swaggerDocs = require('./swagger.js')
-const passport = require('passport');
-const { jwtStrategy } = require('./config/passport');
-const helmet = require('helmet');
-const xss = require('xss-clean');
+module.exports = {
+    apps: [{
+        name: 'api-blockbounce', // Application name used by PM2
+        script: 'app.js', // Entry point script
 
-// set security HTTP headers
-app.use(helmet());
-app.use(xss());
+        // Common settings for all environments
+        watch: true, // Enable auto-restart on file changes
+        ignore_watch: ["node_modules", "logs"], // Ignore watching certain directories
 
-app.use(express.json())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(cors());
-
-db.sequelize.sync()
-    .then(() => {
-        console.log("sync db.");
-    })
-    .catch((err) => {
-        console.log("Failed to sync db: " + err.message);
-    });
-
-// jwt authentication
-app.use(passport.initialize());
-passport.use('jwt', jwtStrategy);
-
-routeManager(app)
-swaggerDocs(app, process.env.PORT)
-
-// error handler
-app.use(function (err, req, res, next) {
-    console.error(err.stack)
-    res.status(500).json({
-        status: false,
-        code  : 500,
-        error : `Can't find ${err.stack}`
-    });
-});
-
-// 404 handler
-app.use(function (req, res, next) {
-    res.status(404).json({
-        status: false,
-        code  : 404,
-        error : `Can't find ${req.originalUrl}`
-    });
-});
-
-
-app.listen(process.env.PORT, () => {
-    console.log(`:::::::::::::::: SERVER RUNNING ON ${process.env.PORT}.`);
-});
+        // Environment-specific settings
+        env: {
+            NODE_ENV: 'development',
+            PORT: 4444,
+            JWT_SECRET: 'BlockBounceSecret',
+            JWT_ACCESS_EXPIRATION_MINUTES: 44,
+            JWT_REFRESH_EXPIRATION_DAYS: 1,
+            JWT_RESET_PASSWORD_EXPIRATION_MINUTES: 44,
+            JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: 44,
+            SMTP_HOST: '', // Add your SMTP configuration
+            SMTP_PORT: 587,
+            SMTP_USERNAME: '',
+            SMTP_PASSWORD: '',
+            EMAIL_FROM: '',
+        },
+        env_test: {
+            NODE_ENV: 'test',
+            PORT: 4445,
+            JWT_SECRET: 'TestSecret', // Adjust as needed for testing
+        },
+        env_production: {
+            NODE_ENV: 'production',
+            PORT: process.env.PORT || 4446,
+            JWT_SECRET: process.env.JWT_SECRET, // Use environment variable for security
+        },
+    }],
+};
