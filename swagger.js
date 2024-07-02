@@ -1,32 +1,38 @@
-const  swaggerJsdoc  = require('swagger-jsdoc');
-const  swaggerUi  = require('swagger-ui-express');
+// swagger.js
 
-const optionsV1 = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'BlockBounce API',
-            description: 'nodejs-express-mysql-api-BlockBounce API ',
-            version: '1.0.0',
-        },
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const express = require('express');
+const router = express.Router();
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'BlockBounce API Documentation',
+      version: '1.0.0',
+      description: 'API documentation for BlockBounce backend',
     },
-    // looks for configuration in specified directories
-    apis: ['./route/v1/*.js', './controller/*.js', './middleware/*.js'],
-}
+    servers: [
+      {
+        url: 'http://localhost:4444',  
+        description: 'Development server',
+      },
+      {
+        url: 'http://localhost:4445', 
+        description: 'Testing server',
+      },
+      {
+        url: 'http://localhost:4446', 
+        description: 'Production server',
+      },
+    ],
+  },
+  apis: ['./routes/*.js', './models/*.js'], 
+};
 
-const swaggerSpecV1 = swaggerJsdoc(optionsV1)
+const specs = swaggerJsdoc(options);
+router.use('/api-docs', swaggerUi.serve);
+router.get('/api-docs', swaggerUi.setup(specs));
 
-function swaggerDocs(app, port) {
-    console.log(`:::::::::::::::: SWAGGER RUNNING ON ${port}.`)
-
-    // Swagger Page For API V1
-    app.use('/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecV1))
-    // Documentation in JSON format
-    app.get('/v1/docs-json', (req, res) => {
-        res.setHeader('Content-Type', 'application/json')
-        res.send(swaggerSpecV1)
-    })
-
-}
-
-module.exports = swaggerDocs
+module.exports = router;
